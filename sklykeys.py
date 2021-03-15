@@ -75,16 +75,16 @@ def generate_signed_ascii(filename):
     return chunks
 
 def print_help():
-    print("sklykeys.py a cli interface for tnp3xxx.py library from nfc.toys \n"
-          "that allows us to read a copy in binary mode and write in eml format\n"
-          ",binary format or mfrc522cli format\n"
+    print("\nsklykeys.py a cli interface for tnp3xxx.py library from nfc.toys \n"
+          "that allows us to read a copy in binary mode "
+          "and write in eml format , binary format or mfrc522cli format\n"
           "  -h prints this help\n"
           "  -u uid (6 bytes in hex) prints keys in stdout\n"
           "  -f file read from file (in binary mode)\n"
           "  -t file write to file otherwise to stdout\n"
-          "  -o output format binary, eml or mfrc522cli format. Default Proxmark emulator format (EML)"
+          "  -o output format binary, eml or mfrc522cli format. Default Proxmark emulator format (EML)\n\n"
           "example: ./sklykeys.py -f spiro.bin -t spiro_keys.m5c -o mfrc522cli"
-          "\n\n\n"
+          "\n"
           )
 
 
