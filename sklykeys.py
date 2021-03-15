@@ -20,7 +20,7 @@ argv = sys.argv[1:]
 file=None
 to_file=None
 uid=None
-bin_output=None
+output_format='eml' # binary, eml or mfrc522
 
 def generate_keys(uid):
     keysa = []
@@ -35,12 +35,11 @@ def get_bin_file(filename):
     return content
 
 def write_file(filename,data):
-    write_format='wb+' if bin_output is True else 'w+'
+    write_format='wb+' if output_format =="binary" else 'w+'
 
     with open(filename, write_format) as f:
         f.write(data)
         f.close()
-
 
 def get_sectors_ascii(filename):
     content=get_bin_file(filename)
@@ -52,7 +51,18 @@ def get_uid_from_file(filename):
     chunks = get_sectors_ascii(filename)
     return chunks[0][:8]
 
+def get_data_mfrc522_format(data):
+    i = 0
+    for field in data:
+        data[i] = "lb "+str(i)+" "+field
+        i = i + 1
+    data = "\n".join(data)
+    return data
 
+def get_keys_mfrc522_format(keys):
+    for sector in range(0, 16):
+        keys[sector]='lka '+str(sector)+" "+keys[sector]
+    return keys
 
 def generate_signed_ascii(filename):
     chunks=get_sectors_ascii(filename)
@@ -64,25 +74,29 @@ def generate_signed_ascii(filename):
         chunks[sector]=keys[i] + chunks[sector][12:]
     return chunks
 
-
 def print_help():
     print("sklykeys.py a cli interface for tnp3xxx.py library from nfc.toys \n"
           "that allows us to read a copy in binary mode and write in eml format\n"
-          "or in binary format\n"
+          ",binary format or mfrc522cli format\n"
+          "  -h prints this help\n"
           "  -u uid (6 bytes in hex) prints keys in stdout\n"
           "  -f file read from file (in binary mode)\n"
           "  -t file write to file otherwise to stdout\n"
-          "  -b output format binary otherwise in Proxmark emulator format (EML)\n"
-          "example: ./sklykeys.py -f spiro.bin -t spiro_keys.bin -b")
+          "  -o output format binary, eml or mfrc522cli format. Default Proxmark emulator format (EML)"
+          "example: ./sklykeys.py -f spiro.bin -t spiro_keys.m5c -o mfrc522cli"
+          "\n\n\n"
+          )
 
 
 if __name__ == '__main__':
+
     try:
-        opts, args = getopt.getopt(argv, 'hu:f:t:b',)
+        opts, args = getopt.getopt(argv, 'ho:u:f:t:',)
 
     except getopt.GetoptError:
 
-        print('Something went wrong!')
+        print('\n\nERROR: Wrong parameters\n\n')
+        print_help()
         sys.exit(2)
 
     for opt,arg in opts:
@@ -94,25 +108,39 @@ if __name__ == '__main__':
 
         if opt in ['-f']:
             file=arg
-        if opt in ['-t']:
+
+        if opt in ['-t']:            
             to_file=arg
-        if opt in ['-b']:
-            bin_output=True
+
+        if opt in ['-o']:
+            output_format=arg
+
+        
 
     if uid is not None:
+        keys=generate_keys(uid)
+        if output_format == 'mfrc522cli':
+            keys=get_keys_mfrc522_format(keys)
+        print("\n".join(keys))
 
-        print("\n".join(generate_keys(uid)))
     elif file is not None:
 
         data=generate_signed_ascii(file)
-        if bin_output is None:
+
+        if output_format == 'eml':
             data = "\n".join(data)
+
+        elif output_format == 'mfrc522cli':
+            data=get_data_mfrc522_format(data)
+
         else:
             data="".join(data)
             data=binascii.unhexlify(data)
             data=bytearray(data)
+
         if to_file is not None:
             write_file(to_file,data)
+
         else:
             print(data)
     else:
