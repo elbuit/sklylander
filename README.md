@@ -18,9 +18,9 @@ that allows us to read a copy in binary mode and write in eml format , binary fo
   -u uid (6 bytes in hex) prints keys in stdout
   -f file read from file (in binary mode)
   -t file write to file otherwise to stdout
-  -o output format binary, eml or mfrc522cli format. Default Proxmark emulator format (EML)
+  -o output format binary, eml or m5c (mfrc522cli) format. Default Proxmark emulator format (EML)
 
-example: ./sklykeys.py -f spiro.bin -t spiro_keys.m5c -o mfrc522cli
+example: ./sklykeys.py -f spiro.bin -t spiro_keys.m5c -o m5c
 
 ```
 

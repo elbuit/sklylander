@@ -20,7 +20,7 @@ argv = sys.argv[1:]
 file=None
 to_file=None
 uid=None
-output_format='eml' # binary, eml or mfrc522
+output_format='eml' # binary, eml or m5c (mfrc522cli)
 
 def generate_keys(uid):
     keysa = []
@@ -82,8 +82,8 @@ def print_help():
           "  -u uid (6 bytes in hex) prints keys in stdout\n"
           "  -f file read from file (in binary mode)\n"
           "  -t file write to file otherwise to stdout\n"
-          "  -o output format binary, eml or mfrc522cli format. Default Proxmark emulator format (EML)\n\n"
-          "example: ./sklykeys.py -f spiro.bin -t spiro_keys.m5c -o mfrc522cli"
+          "  -o output format binary, eml or m5c (mfrc522cli) format. Default Proxmark emulator format (EML)\n\n"
+          "example: ./sklykeys.py -f spiro.bin -t spiro_keys.m5c -o m5c"
           "\n"
           )
 
@@ -119,7 +119,7 @@ if __name__ == '__main__':
 
     if uid is not None:
         keys=generate_keys(uid)
-        if output_format == 'mfrc522cli':
+        if output_format == 'm5c':
             keys=get_keys_mfrc522_format(keys)
         print("\n".join(keys))
 
@@ -130,7 +130,7 @@ if __name__ == '__main__':
         if output_format == 'eml':
             data = "\n".join(data)
 
-        elif output_format == 'mfrc522cli':
+        elif output_format == 'm5c':
             data=get_data_mfrc522_format(data)
 
         else:
